@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>study spring boot</title>
+<!--    <link rel="stylesheet" type="text/css" href="/css/newPost.css">-->
+<!--    <link rel="stylesheet" type="text/css" href="/css/main.css">-->
+    <link rel="stylesheet" type="text/css" href="/css/login.css">
+</head>
+<input type="hidden" th:value="${name}" id="name">
+<body class="bg-gray-100">
+<form method="post">
+    <main class="flex items-center justify-center h-screen"  style="padding-top: 280px;">
+        <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full max-w-md mx-auto" data-v0-t="card">
+            <div class="flex flex-col space-y-1.5 p-6">
+                <div class="flex justify-center items-center">
+                    <h3 class="text-2xl font-semibold leading-none tracking-tight">로그인</h3>
+                </div>
+            </div>
+            <div class="p-6">
+                <div class="grid gap-4">
+                    <label
+                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            for="id"
+                    >
+                        ID
+                    </label>
+                    <input
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            id="id"
+                            required=""
+                            name="user_id"
+                    />
+                    <label
+                            class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                            for="password"
+                    >
+                        Password
+                    </label>
+                    <input
+                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            id="password"
+                            required=""
+                            type="password"
+                            name="user_pwd"
+                    />
+                    <button id="login_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 mt-4">
+                        로그인
+                    </button>
+                    <div class="flex justify-between items-center mt-4">
+                        <a class="text-sm text-blue-500 hover:underline" href="#">
+                            비밀번호를 잊으셨습니까?
+                        </a>
+                        <a class="text-sm text-blue-500 hover:underline" href="#" id="reg_btn">
+                            회원가입
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="w-full p-6 border-t flex justify-center items-center fixed bottom-0">
+            <p class="text-sm text-gray-600">© 2024 Bulletin Board. All rights reserved.</p>
+        </footer>
+    </main>
+</form>
+<script>
+    let name = document.getElementById("name").value;
+
+    if(name === "0000000000000000000000000") {
+        alert("아이디 혹은 비밀번호가 틀렸습니다");
+    }
+
+    // 회원가입
+    document.getElementById("reg_btn").addEventListener("click", function() {
+        location.href = "/register";
+    });
+
+    document.getElementById("login_btn").addEventListener("click", function() {
+        let error = true;
+        let msg = "";
+
+        if(document.getElementById("id").value.length === 0)
+            msg = "아이디를 입력하세요";
+        else if(document.getElementById("password").value.length === 0)
+            msg = "비밀번호를 입력하세요";
+        else
+            error = false;
+
+        if(error) {
+            event.preventDefault();
+            alert(msg)
+        }
+    });
+</script>
+</body>
+</html>

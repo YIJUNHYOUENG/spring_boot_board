@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>study spring boot</title>
+    <link rel="stylesheet" type="text/css" href="/css/newPost.css">
+</head>
+<body>
+    <input type="hidden" th:value="${data}" id="JSONData">
+    <input type="hidden" th:value="${chat_data}" id="JSONChatData">
+    <main class="grid gap-6 p-6">
+        <header class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold">2024년 계획표</h1>
+            <div class="flex gap-3">
+                <!-- 로그인 기능은 아직 구현 계획 x -->
+                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">-->
+                <!--                Sign in-->
+                <!--            </button>-->
+                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">-->
+                <!--                Register-->
+                <!--            </button>-->
+                <button id="back_btn"
+                        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    이전화면
+                </button>
+            </div>
+        </header>
+        <section class="grid gap-6">
+            <hr>
+            <div>
+                <h2 id="title" class="text-2xl font-bold"></h2>
+            </div>
+
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full" data-v0-t="card">
+                <div class="p-6">
+                    <div class="grid gap-2">
+
+                        <h4
+                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                            내용
+                        </h4>
+                        <br/>
+                        <div>
+                            <p id="contents"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-2" style="margin: 10px;">
+                    <button id="likes_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                        <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                class="h-4 w-4"
+                        >
+                            <path d="M7 10v12"></path>
+                            <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>
+                        </svg>
+                    </button>
+                    <p>좋아요 <span id="likes"></span></p>
+                </div>
+            </div>
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full" data-v0-t="card">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-semibold leading-none tracking-tight">댓글</h3>
+                        <div style="width: 90%;">
+                            <input
+                                    class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    id="chat_contents"
+                            />
+                        </div>
+                        <button id="add_chat_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                             등록
+                        </button>
+                    </div>
+                </div>
+                <div id="chat_body">
+
+
+                </div>
+            </div>
+        </section>
+    </main>
+    <!--  댓글이 비었을 때 호출되는 팝업  -->
+    <div id="alert_popup" class="border rounded-lg" style="width: 300px; height: 120px; display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white">
+        <h3 id="alert_text" style="margin-top: 30px;">댓글을 입력하세요.</h3>
+        <button id="alert_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                style="margin-top: 10px;">
+            확인
+        </button>
+    </div>
+</body>
+<script>
+    let rowData = JSON.parse(document.getElementById("JSONData").value);
+    let rowChatData = JSON.parse(document.getElementById("JSONChatData").value);
+
+    // 저장된 내역 출력
+    document.getElementById("title").innerText = rowData.title;
+    document.getElementById("contents").innerText = rowData.contents;
+    document.getElementById("likes").innerText = rowData.likes;
+
+    let chat_body = document.getElementById("chat_body");
+    let maxCnt = Object.keys(rowChatData).length;
+    console.log(maxCnt)
+    chat_body.innerHTML = "";
+    for(let i=0;i<maxCnt;i++) {
+        let j = rowChatData[i];
+        let row = document.createElement("div");
+        let time = j.reg_time.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3');
+
+        row.innerHTML = "<div class=\"p-2\" id='"+i+"'>\n" +
+            "                        <div class=\"grid gap-6\">\n" +
+            "                            <div class=\"rounded-lg border bg-card text-card-foreground shadow-sm\" data-v0-t=\"card\">\n" +
+            "                                <div class=\"flex flex-col space-y-1.5 p-6\">\n" +
+            "                                    <div class=\"flex justify-between items-center\">\n" +
+            "                                        <div class='flex'>\n" +
+            "                                           <p class=\"leading-none font-semibold mt-1\" style='width: 120px'>" + j.user_name + "</p>\n" +
+            "                                           <p class=\"leading-none\" style='margin-left: 50px; line-height: 23px;'>" + j.chat_contents + "</p>\n" +
+            "                                        </div>\n"+
+            "                                        <div class='w-[160px] flex' style='min-width: 130px;'>\n" +
+            "                                            <button id='chat_likes_btn' onclick='fn_chatLikesClick("+j.chat_seq+")' class=\"inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-6 w-6\">\n" +
+            "                                                <svg\n" +
+            "                                                        xmlns=\"http://www.w3.org/2000/svg\"\n" +
+            "                                                        width=\"18\"\n" +
+            "                                                        height=\"18\"\n" +
+            "                                                        viewBox=\"0 0 24 24\"\n" +
+            "                                                        fill=\"none\"\n" +
+            "                                                        stroke=\"currentColor\"\n" +
+            "                                                        stroke-width=\"2\"\n" +
+            "                                                        stroke-linecap=\"round\"\n" +
+            "                                                        stroke-linejoin=\"round\"\n" +
+            "                                                        class=\"h-3 w-3\"\n" +
+            "                                                            style=\"margin-top : 2px;\"\n" +
+            "                                                >\n" +
+            "                                                    <path d=\"M7 10v12\"></path>\n" +
+            "                                                    <path d=\"M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z\"></path>\n" +
+            "                                                </svg>\n" +
+            "                                            </button>\n" +
+            "                                            <p class='ml-1' style='margin-right: 10px;'>" + j.likes + "</p>\n" +
+            "                                        <p class=\"text-sm text-gray-600 ml-2\">" + time + "</p>\n" +
+            "                                    </div>\n"+
+            "                                    </div>\n" +
+            "                                </div>\n" +
+            "                            </div>\n" +
+            "                        </div>\n" +
+            "                    </div>";
+
+        chat_body.appendChild(row);
+    }
+
+    // 이전화면 클릭 이벤트
+    document.getElementById("back_btn").addEventListener("click", function () {
+        event.preventDefault();
+
+        location.href = "/";
+    });
+
+    // 좋아요 버튼 클릭
+    document.getElementById("likes_btn").addEventListener("click", function () {
+        location.href = "/likes/" + rowData.post_seq;
+    })
+
+    // 댓글 등록 클릭
+    document.getElementById("add_chat_btn").addEventListener("click", function () {
+        if(document.getElementById("chat_contents").value.trim().length === 0) {
+            event.preventDefault();
+            document.getElementById("alert_popup").style.display = "block";
+        } else {
+            location.href = "/add_chat/" + rowData.user_id + "/" + rowData.post_seq + "/" + document.getElementById("chat_contents").value;
+        }
+    })
+
+    document.getElementById("alert_btn").addEventListener("click", function() {
+        event.preventDefault();
+        document.getElementById("alert_popup").style.display = "none";
+    });
+
+    // 댓글 좋아요 클릭
+    function fn_chatLikesClick(chat_seq) {
+        location.href = "/likes/" + rowData.post_seq + "/" + chat_seq;
+    }
+
+</script>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<input type="hidden" id="login" th:value="${login}">
+<script>
+    if(document.getElementById("login").value === "N") {
+        alert("로그인 후 이용 가능합니다");
+    }
+
+    // post 데이터 버릴 페이지
+    window.onload = function(){
+        location.href = "/";
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>study spring boot</title>
+    <link rel="stylesheet" type="text/css" href="/css/newPost.css">
+</head>
+<body>
+<input type="hidden" th:value="${data}" id="JSONData">
+<input type="hidden" th:value="${name}" id="NAME">
+<input type="hidden" th:value="${user_id}" id="ID">
+<main class="grid gap-6 p-6">
+    <header class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold">2024년 계획표</h1>
+        <div class="flex gap-3">
+            <!-- 로그인 기능은 아직 구현 계획 x -->
+            <button id="login_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                로그인
+            </button>
+            <button id="logout_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2" style="display:none;">
+                로그아웃
+            </button>
+            <!--<button id="reg_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                회원가입
+            </button>-->
+            <button id="btnAdd"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                등록
+            </button>
+        </div>
+    </header>
+    <section class="grid gap-6">
+        <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full" data-v0-t="card">
+            <div class="flex flex-col space-y-1.5 p-6">
+                <div class="flex justify-between items-center">
+<!--                    <input-->
+<!--                            class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"-->
+<!--                            id="search"-->
+<!--                            placeholder="찾고싶은 내용을 입력하세요"-->
+<!--                    />-->
+                </div>
+            </div>
+            <div id="outputData">
+                <div class="p-6">
+                    <div class="grid gap-6">
+                        <div class="rounded-lg border bg-card text-card-foreground shadow-sm" data-v0-t="card">
+                            <div class="flex flex-col space-y-1.5 p-6">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-2xl font-semibold leading-none tracking-tight">Message Title</h3>
+                                    <p class="text-sm text-gray-600">Posted at 12:00</p>
+                                </div>
+                            </div>
+                            <div class="p-6">
+                                <div class="flex justify-between items-center mt-4">
+                                    <div class="flex gap-2">
+                                        <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10">
+                                            <svg
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    width="24"
+                                                    height="24"
+                                                    viewBox="0 0 24 24"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    stroke-width="2"
+                                                    stroke-linecap="round"
+                                                    stroke-linejoin="round"
+                                                    class="h-4 w-4"
+                                            >
+                                                <path d="M7 10v12"></path>
+                                                <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>
+                                            </svg>
+                                        </button>
+                                        <p>10 Likes</p>
+                                    </div>
+                                    <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                                        이동
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+<script>
+    let name = document.getElementById("NAME").value;
+    if(name.length > 0) {
+        document.getElementById("login_btn").style.display = "none";
+        document.getElementById("logout_btn").style.display = "block";
+    } else {
+        document.getElementById("logout_btn").style.display = "none";
+        document.getElementById("login_btn").style.display = "block";
+    }
+
+    let outputData = document.getElementById("outputData");
+    let rowData = JSON.parse(document.getElementById("JSONData").value);
+    let maxCnt = Object.keys(rowData).length;
+    outputData.innerHTML = "";
+
+    if(maxCnt == 0) {
+        let row = document.createElement("div");
+        row.innerHTML = "<div class='w-full h-10' style='text-align: center'><p class='font-semibold'>등록된 게시물이 없습니다.</p></div>"
+        outputData.appendChild(row);
+    } else {
+        for (let i = 0; i < maxCnt; i++) {
+            let j = rowData[i];
+            let row = document.createElement("div");
+            let time = j.reg_time.replace(/(\d{4})(\d{2})(\d{2})/g, '$1-$2-$3');
+
+            row.innerHTML = "<div class=\"p-6\">\n" +
+                "                        <div class=\"grid gap-6\">\n" +
+                "                            <div class=\"rounded-lg border bg-card text-card-foreground shadow-sm\" data-v0-t=\"card\">\n" +
+                "                                <div class=\"flex flex-col space-y-1.5 p-6\">\n" +
+                "                                    <div class=\"flex justify-between items-center\">\n" +
+                "                                        <h3 class=\"text-2xl font-semibold leading-none tracking-tight\">" + j.title + "</h3>\n" +
+                "                                        <p class=\"text-sm text-gray-600\">" + time + "</p>\n" +
+                "                                    </div>\n" +
+                "                                </div>\n" +
+                "                                <div class=\"p-6\">\n" +
+                "                                    <div class=\"flex justify-between items-center mt-4\">\n" +
+                "                                        <div class=\"flex gap-2\">\n" +
+                // "                                            <button class=\"inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 w-10\">\n" +
+                "                                                <svg\n" +
+                "                                                        xmlns=\"http://www.w3.org/2000/svg\"\n" +
+                "                                                        width=\"24\"\n" +
+                "                                                        height=\"24\"\n" +
+                "                                                        viewBox=\"0 0 24 24\"\n" +
+                "                                                        fill=\"none\"\n" +
+                "                                                        stroke=\"currentColor\"\n" +
+                "                                                        stroke-width=\"2\"\n" +
+                "                                                        stroke-linecap=\"round\"\n" +
+                "                                                        stroke-linejoin=\"round\"\n" +
+                "                                                        class=\"h-4 w-4\"\n" +
+                "                                                            style=\"margin-top : 4px;\"\n" +
+                "                                                >\n" +
+                "                                                    <path d=\"M7 10v12\"></path>\n" +
+                "                                                    <path d=\"M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z\"></path>\n" +
+                "                                                </svg>\n" +
+                // "                                            </button>\n" +
+                "                                            <p>" + j.likes + "</p>\n" +
+                "                                        </div>\n" +
+                "                                       <button onclick=\"fn_detailPage('"+j.post_seq+"')\" class=\"inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2\">\n" +
+                "                                           이동\n" +
+                "                                       </button>\n" +
+                "                                    </div>\n" +
+                "                                </div>\n" +
+                "                            </div>\n" +
+                "                        </div>\n" +
+                "                    </div>";
+
+            outputData.appendChild(row);
+
+        }
+    }
+
+    // 등록 버튼 클릭
+    let add = document.getElementById("btnAdd");
+    add.addEventListener("click", function () {
+        location.href = "/newPost";
+    });
+
+    // 이동 버튼 클릭
+    function fn_detailPage(post_seq) {
+        location.href = "/detailPage/"+post_seq;
+    }
+
+    // 로그인 버튼 클릭
+    document.getElementById("login_btn").addEventListener("click", function() {
+        location.href = "/login";
+    });
+
+    // 로그아웃 버튼 클릭
+    document.getElementById("logout_btn").addEventListener("click", function() {
+        location.href = "/logout";
+    });
+</script>
+</html>
