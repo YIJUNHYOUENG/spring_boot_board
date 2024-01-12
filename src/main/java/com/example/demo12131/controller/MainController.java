@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @Controller
-@CrossOrigin(origins = "https://www.springbootproject.com/")
 public class MainController {
     PostDAO pd = new PostDAO();
 
@@ -33,7 +32,7 @@ public class MainController {
     // 등록페이지
     @GetMapping("newPost")
     public String newPost(@CookieValue(name = "user_id", required = false) Cookie user_id, Model model) {
-        if(Objects.equals(user_id.getValue(), "")) {
+        if(user_id == null || Objects.equals(user_id.getValue(), "")) {
             model.addAttribute("login", "N");
             return "tempPage";
         } else
