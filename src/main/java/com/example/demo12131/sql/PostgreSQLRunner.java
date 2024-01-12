@@ -8,7 +8,7 @@ import java.util.Objects;
 
 
 public class PostgreSQLRunner {
-    private String URL = "jdbc:postgresql://196.233.38.175:5432/toyProject";
+    private String URL = "jdbc:postgresql://localhost:5432/toyProject";
     private String USERNAME = "postgres"; //postgresql 계정
     private String PASSWORD = "jh9171w!!"; //비밀번호
 
