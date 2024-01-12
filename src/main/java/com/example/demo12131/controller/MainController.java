@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Objects;
 
 @Controller
+@CrossOrigin(origins = "https://www.springbootproject.com/")
 public class MainController {
     PostDAO pd = new PostDAO();
 
