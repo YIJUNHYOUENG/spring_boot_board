@@ -15,8 +15,18 @@ public class PostDAO {
         return json;
     }
 
+    public void deletePostData(int postSeq) {
+        p.deletePostData(postSeq);
+        p.deleteChatAllData(postSeq);
+        p.deleteLikeAllData(postSeq);
+    }
+
     public void insertPostData(String title, String message, String user_id) {
         p.insertPostsData(title, message, user_id);
+    }
+
+    public void updatePostData(String title, String message, String user_id, int post_seq) {
+        p.updatePostsData(title, message, user_id, post_seq);
     }
 
     public JSONObject selectDetailPostsData(String postSeq) {
@@ -42,6 +52,11 @@ public class PostDAO {
         return json;
     }
 
+    public void deleteChatData(int postSeq, int chatSeq) {
+        p.deleteChatData(postSeq, chatSeq);
+        p.deleteLikeData(postSeq, chatSeq);
+    }
+
     public void updateLikesData(String userId, int postSeq, int chatSeq) {
         p.insertUserLikesData(userId, postSeq, chatSeq);
         p.updateLikesData(postSeq, chatSeq);
@@ -58,6 +73,9 @@ public class PostDAO {
     public String selectUserLoginData(String userId, String userPwd) {
         return p.selectUserLoginData(userId, userPwd);
     }
+    public String selectUserAdminData(String userId, String userPwd) {
+        return p.selectUserAdminData(userId, userPwd);
+    }
 
     public boolean selectUserLikesChk(String userId, int postSeq) {
         return p.selectUserLikesChk(userId, postSeq);
@@ -65,5 +83,17 @@ public class PostDAO {
 
     public boolean selectUserLikesChk(String userId, int postSeq, int chatSeq) {
         return p.selectUserLikesChk(userId, postSeq, chatSeq);
+    }
+
+    public JSONObject selectUserInfoAllData() {
+        return p.selectUserInfoAllData();
+    }
+
+    public JSONObject selectUserInquiryData() {
+        return p.selectUserInquiryData();
+    }
+
+    public void insertUserInfoData(String userId, String contents) {
+        p.insertUserInfoData(userId, contents);
     }
 }

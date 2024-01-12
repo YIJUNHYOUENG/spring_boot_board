@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>study spring boot</title>
+    <link rel="stylesheet" type="text/css" href="/css/newPost.css">
+</head>
+<body>
+<input type="hidden" th:value="${data}" id="JSONData">
+<form method="post">
+    <main class="grid gap-6 p-6">
+        <header class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold">2024년 계획표</h1>
+            <div class="flex gap-3">
+                <!-- 로그인 기능은 아직 구현 계획 x -->
+                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">-->
+                <!--                Sign in-->
+                <!--            </button>-->
+                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">-->
+                <!--                Register-->
+                <!--            </button>-->
+                <button id="back_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                    이전화면
+                </button>
+            </div>
+        </header>
+        <section class="grid gap-6">
+            <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full" data-v0-t="card">
+                <div class="flex flex-col space-y-1.5 p-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-2xl font-semibold leading-none tracking-tight">게시물 수정</h3>
+                        <button id="save_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                            저장
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="grid gap-2">
+                        <label
+                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                for="title"
+                        >
+                            제목
+                        </label>
+                        <input
+                                class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                id="title"
+                                required=""
+                                name="title"
+                        />
+                        <label
+                                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                for="message"
+                        >
+                            내용
+                        </label>
+                        <textarea
+                                class="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                id="message"
+                                required=""
+                                name="contents"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</form>
+</body>
+<script>
+    let rowData = JSON.parse(document.getElementById("JSONData").value);
+
+    console.log(rowData)
+
+    document.getElementById("title").value = rowData.title;
+    document.getElementById("message").innerText = rowData.contents;
+
+
+    // 등록 클릭 이벤트
+    document.getElementById("save_btn").addEventListener("click", function() {
+        let title = document.getElementById("title").value;
+        let message = document.getElementById("message").value;
+        let error = true;
+        let msg = "";
+
+        if(title.length <= 0) {
+            msg = "제목을 입력하세요";
+        } else if(message.length <= 0) {
+            msg = "내용을 입력하세요";
+        } else {
+            error = false;
+        }
+
+        if(error) {
+            event.preventDefault();
+            alert(msg);
+        } else {
+            if(!confirm("수정하시곘습니까?")) {
+                event.preventDefault();
+            }
+        }
+
+
+    });
+
+    // 이전화면 클릭 이벤트
+    document.getElementById("back_btn").addEventListener("click", function () {
+        event.preventDefault();
+
+        location.href = "/detailPage/"+rowData.post_seq;
+    });
+</script>
+</html>

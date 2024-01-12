@@ -6,6 +6,7 @@ import com.example.demo12131.model.NewPost;
 import com.example.demo12131.model.User;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.constraints.Null;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,12 @@ public class MainController {
 
     // 시작화면
     @GetMapping("")
-    public String main(Model model, @CookieValue(name = "user_name", required = false) Cookie name) {
+    public String main(Model model, @CookieValue(name = "user_name", required = false) Cookie name, @CookieValue(name = "admin_yn", required = false) Cookie admin_yn) {
         model.addAttribute("data", pd.selectPostData());
-
-        if(name != null)
-            model.addAttribute("name", name.getValue());;
+        if(name != null) {
+            model.addAttribute("name", name.getValue());
+            model.addAttribute("admin_yn", admin_yn.getValue());
+        }
 
         return "main";
     }
@@ -47,10 +49,26 @@ public class MainController {
 
     // 수정페이지
     @GetMapping("detailPage/{post_seq}")
-    public String detailPost(@PathVariable("post_seq") String post_seq,  Model model) throws Exception {
+    public String detailPost(@PathVariable("post_seq") String post_seq,  Model model, @CookieValue(name = "user_id", required = false) Cookie user_id) throws Exception {
         model.addAttribute("data", pd.selectDetailPostsData(post_seq));
         model.addAttribute("chat_data", pd.selectChatData(post_seq));
+        model.addAttribute("user_id", Encryption.aesCBCDecode(user_id.getValue()));
         return "detailPost";
+    }
+
+    @GetMapping("delete/{post_seq}")
+    public String deletePost(@PathVariable("post_seq") int post_seq) throws Exception {
+        pd.deletePostData(post_seq);
+        return "tempPage";
+    }
+
+    @GetMapping("delete/{post_seq}/{chat_seq}")
+    public String deleteChat(@PathVariable("post_seq") int post_seq, @PathVariable("chat_seq") int chat_seq, Model model) throws Exception {
+        pd.deleteChatData(post_seq, chat_seq);
+
+        model.addAttribute("likes_yn", "N");
+        model.addAttribute("post_seq", post_seq);
+        return "likes";
     }
 
     @GetMapping("likes/{post_seq}")
@@ -67,7 +85,6 @@ public class MainController {
             }
 
             model.addAttribute("likes_yn", likes_yn);
-            model.addAttribute("user_id", Encryption.aesCBCDecode(user_id.getValue()));
             model.addAttribute("post_seq", post_seq);
             return "likes";
         }
@@ -129,6 +146,11 @@ public class MainController {
             cookie.setPath("/"); // 모든 경로에서 접근 가능 하도록 설정
             response.addCookie(cookie);
 
+            cookie = new Cookie("admin_yn", pd.selectUserAdminData(form.getUser_id(), form.getUser_pwd()));
+            cookie.setMaxAge(60 * 60);
+            cookie.setPath("/"); // 모든 경로에서 접근 가능 하도록 설정
+            response.addCookie(cookie);
+
             return "tempPage";
         }
     }
@@ -146,6 +168,11 @@ public class MainController {
         cookie.setPath("/"); // 모든 경로에서 접근 가능 하도록 설정
         response.addCookie(cookie);
 
+        cookie = new Cookie("admin_yn", null);
+        cookie.setMaxAge(0);
+        cookie.setPath("/"); // 모든 경로에서 접근 가능 하도록 설정
+        response.addCookie(cookie);
+
         return "tempPage";
     }
 
@@ -158,7 +185,6 @@ public class MainController {
 
     @PostMapping("register")
     public String user_reg(User form, Model model) {
-        System.out.println(form.toPrint());
         if(pd.selectUserIdOverlap(form.getUser_id())) {
             model.addAttribute("name", form.getUser_name());
             return "register";
@@ -169,4 +195,50 @@ public class MainController {
         }
     }
     // 회원가입페이지
+
+    @GetMapping("fixPage/{post_seq}")
+    public String fix(@PathVariable("post_seq") String post_seq, @CookieValue(name = "user_id", required = false) Cookie user_id, Model model) {
+        if(user_id == null || Objects.equals(user_id.getValue(), "")) {
+            model.addAttribute("login", "N");
+            return "tempPage";
+        } else {
+            model.addAttribute("data", pd.selectDetailPostsData(post_seq));
+            return "fixPage";
+        }
+    }
+
+    @PostMapping("fixPage/{post_seq}")
+    public String fixPage(NewPost form, @CookieValue(name = "user_id") Cookie user_id, @PathVariable("post_seq") int post_seq, Model model) throws Exception {
+        pd.updatePostData(form.getTitle(), form.getContents(), Encryption.aesCBCDecode(user_id.getValue()), post_seq);
+
+        model.addAttribute("likes_yn", "N");
+        model.addAttribute("post_seq", post_seq);
+        return "likes";
+    }
+
+    @GetMapping("admin")
+    public String admin(Model model) {
+        model.addAttribute("data", pd.selectUserInfoAllData());
+        model.addAttribute("inquiry", pd.selectUserInquiryData());
+
+        return "admin";
+    }
+
+    @GetMapping("inquiry")
+    public String inquiry(@CookieValue(name = "user_id") Cookie user_id, Model model) {
+        if(user_id == null || Objects.equals(user_id.getValue(), "")) {
+            model.addAttribute("login", "N");
+            return "tempPage";
+        } else {
+            return "inquiry";
+        }
+
+    }
+
+    @GetMapping("inquiry/{contents}")
+    public String insertInquiry(@CookieValue(name = "user_id") Cookie user_id, @PathVariable("contents") String contents) throws Exception {
+        pd.insertUserInfoData(Encryption.aesCBCDecode(user_id.getValue()), contents);
+
+        return "tempPage";
+    }
 }

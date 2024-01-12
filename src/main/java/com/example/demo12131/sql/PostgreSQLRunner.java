@@ -4,10 +4,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.sql.*;
+import java.util.Objects;
 
 
 public class PostgreSQLRunner {
-    private String URL = "jdbc:postgresql://localhost:5432/toyProject";
+    private String URL = "jdbc:postgresql://196.233.38.175:5432/toyProject";
     private String USERNAME = "postgres"; //postgresql 계정
     private String PASSWORD = "jh9171w!!"; //비밀번호
 
@@ -64,8 +65,6 @@ public class PostgreSQLRunner {
     }
 
     public void insertPostsData(String title, String contents, String user_id) {
-
-
         try {
             Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
             System.out.println(con); //연결 정보 출력
@@ -73,6 +72,21 @@ public class PostgreSQLRunner {
             pre.setString(1, title);
             pre.setString(2, contents);
             pre.setString(3, user_id);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updatePostsData(String title, String contents, String user_id, int post_seq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre = con.prepareStatement("update posts set title = ?, contents = ? where user_id = ? and post_seq = ?");
+            pre.setString(1, title);
+            pre.setString(2, contents);
+            pre.setString(3, user_id);
+            pre.setInt(4, post_seq);
             pre.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -169,13 +183,16 @@ public class PostgreSQLRunner {
 
     public void insertUserInfoData(String userName, String userId, String userPwd) {
         try {
+            String admin_yn = "N";
+            if(Objects.equals(userId, "admin01") && Objects.equals(userPwd, "admin01")) admin_yn = "Y";
             Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
             System.out.println(con); //연결 정보 출력
             PreparedStatement pre;
-            pre = con.prepareStatement("insert into user_info values(?, ?, ?, 'N', to_char(now(),'YYYYMMDD'))");
+            pre = con.prepareStatement("insert into user_info values(?, ?, ?, ?, to_char(now(),'YYYYMMDD'))");
             pre.setString(1, userId);
             pre.setString(2, userPwd);
             pre.setString(3, userName);
+            pre.setString(4, admin_yn);
 
             pre.executeUpdate();
         } catch (SQLException e) {
@@ -195,6 +212,20 @@ public class PostgreSQLRunner {
             e.printStackTrace();
         }
         return user_name;
+    }
+
+    public String selectUserAdminData(String userId, String userPwd) {
+        String admin_yn = "N";
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            Statement pre = con.createStatement();
+            ResultSet rs = pre.executeQuery("select admin_yn from user_info where user_id = '"+userId+"' and user_pwd = '"+userPwd+"'");
+            if(rs.next()) admin_yn = (String)rs.getObject(1);
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }
+        return admin_yn;
     }
 
     public void insertUserLikesData(String userId, int postSeq) {
@@ -252,5 +283,141 @@ public class PostgreSQLRunner {
             e.printStackTrace();
         }
         return likes_yn;
+    }
+
+    public void deletePostData(int postSeq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("delete from posts where post_seq = ?");
+            pre.setInt(1, postSeq);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteChatAllData(int postSeq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("delete from chat where post_seq = ?");
+            pre.setInt(1, postSeq);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteLikeAllData(int postSeq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("delete from user_likes where post_seq = ?");
+            pre.setInt(1, postSeq);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteChatData(int postSeq, int chatSeq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("delete from chat where post_seq = ? and chat_seq = ?");
+            pre.setInt(1, postSeq);
+            pre.setInt(2, chatSeq);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteLikeData(int postSeq, int chatSeq) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("delete from user_likes where post_seq = ? and chat_seq = ? and gubun = '2'");
+            pre.setInt(1, postSeq);
+            pre.setInt(2, chatSeq);
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public JSONObject selectUserInfoAllData() {
+        JSONObject row = new JSONObject();
+        try {
+            int idx = 0;
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            Statement pre = con.createStatement();
+            ResultSet rs = pre.executeQuery("select * from user_info where admin_yn = 'N'");
+            while(rs.next()) {
+                JSONObject obj = new JSONObject();
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int total_rows = rsmd.getColumnCount(); // MVC
+                for (int i = 0; i < total_rows; i++) {
+                    String columnName = rsmd.getColumnLabel(i + 1);
+                    Object columnValue = rs.getObject(i + 1);
+                    obj.put(columnName, columnValue);
+                }
+                row.put(String.valueOf(idx), obj);
+                idx += 1;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return row;
+    }
+
+    public JSONObject selectUserInquiryData() {
+        JSONObject row = new JSONObject();
+        try {
+            int idx = 0;
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            Statement pre = con.createStatement();
+            ResultSet rs = pre.executeQuery("select * from user_inquiry");
+            while(rs.next()) {
+                JSONObject obj = new JSONObject();
+                ResultSetMetaData rsmd = rs.getMetaData();
+                int total_rows = rsmd.getColumnCount(); // MVC
+                for (int i = 0; i < total_rows; i++) {
+                    String columnName = rsmd.getColumnLabel(i + 1);
+                    Object columnValue = rs.getObject(i + 1);
+                    obj.put(columnName, columnValue);
+                }
+                row.put(String.valueOf(idx), obj);
+                idx += 1;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return row;
+    }
+
+    public void insertUserInfoData(String userId, String contents) {
+        try {
+            Connection con = DriverManager.getConnection(URL, USERNAME, PASSWORD); //db 연결
+            System.out.println(con); //연결 정보 출력
+            PreparedStatement pre;
+            pre = con.prepareStatement("insert into user_inquiry values(?, ?, to_char(now(),'YYYYMMDD'))");
+            pre.setString(1, userId);
+            pre.setString(2, contents);
+
+            pre.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

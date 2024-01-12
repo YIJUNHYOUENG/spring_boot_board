@@ -8,12 +8,21 @@
 <body>
 <input type="hidden" th:value="${data}" id="JSONData">
 <input type="hidden" th:value="${name}" id="NAME">
+<input type="hidden" th:value="${admin_yn}" id="ADMIN_YN">
 <input type="hidden" th:value="${user_id}" id="ID">
 <main class="grid gap-6 p-6">
     <header class="flex justify-between items-center">
         <h1 class="text-3xl font-bold">2024년 계획표</h1>
         <div class="flex gap-3">
-            <!-- 로그인 기능은 아직 구현 계획 x -->
+            <div>
+                <p id="login_user_name" class="text-sm font-semibold" style="margin-top: 8px; margin-right: 15px;"></p>
+            </div>
+            <button id="admin_btn" style="display: none;" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                관리자페이지
+            </button>
+            <button id="inquiry_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
+                오류신고 및 문의하기
+            </button>
             <button id="login_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                 로그인
             </button>
@@ -87,12 +96,22 @@
 </body>
 <script>
     let name = document.getElementById("NAME").value;
+    let admin_yn = document.getElementById("ADMIN_YN").value;
     if(name.length > 0) {
         document.getElementById("login_btn").style.display = "none";
         document.getElementById("logout_btn").style.display = "block";
+
+        document.getElementById("login_user_name").innerText = name;
     } else {
         document.getElementById("logout_btn").style.display = "none";
         document.getElementById("login_btn").style.display = "block";
+
+        document.getElementById("login_user_name").style.display = "none";
+    }
+
+    console.log(admin_yn)
+    if(admin_yn === "Y") {
+        document.getElementById("admin_btn").style.display = "block";
     }
 
     let outputData = document.getElementById("outputData");
@@ -166,6 +185,16 @@
     function fn_detailPage(post_seq) {
         location.href = "/detailPage/"+post_seq;
     }
+
+    // 관리자페이지 버튼 이벤트
+    document.getElementById("admin_btn").addEventListener("click", function () {
+        location.href = "/admin";
+    });
+
+    // 오류신고 & 문의하기 버튼 이벤트
+    document.getElementById("inquiry_btn").addEventListener("click", function() {
+        location.href = "/inquiry";
+    });
 
     // 로그인 버튼 클릭
     document.getElementById("login_btn").addEventListener("click", function() {

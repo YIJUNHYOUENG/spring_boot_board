@@ -8,17 +8,19 @@
 <body>
     <input type="hidden" th:value="${data}" id="JSONData">
     <input type="hidden" th:value="${chat_data}" id="JSONChatData">
+    <input type="hidden" th:value="${user_id}" id="USER_ID">
     <main class="grid gap-6 p-6">
         <header class="flex justify-between items-center">
             <h1 class="text-3xl font-bold">2024년 계획표</h1>
             <div class="flex gap-3">
-                <!-- 로그인 기능은 아직 구현 계획 x -->
-                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">-->
-                <!--                Sign in-->
-                <!--            </button>-->
-                <!--            <button class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">-->
-                <!--                Register-->
-                <!--            </button>-->
+                <div id="post_owner">
+                    <button id="fix_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        수정
+                    </button>
+                    <button style="margin-left: 7px;" id="del_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2">
+                        삭제
+                    </button>
+                </div>
                 <button id="back_btn"
                         class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                     이전화면
@@ -65,7 +67,7 @@
                             <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2h0a3.13 3.13 0 0 1 3 3.88Z"></path>
                         </svg>
                     </button>
-                    <p>좋아요 <span id="likes"></span></p>
+                    <p style="margin-top: 6px;">좋아요 <span id="likes"></span></p>
                 </div>
             </div>
             <div class="rounded-lg border bg-card text-card-foreground shadow-sm w-full" data-v0-t="card">
@@ -90,18 +92,16 @@
             </div>
         </section>
     </main>
-    <!--  댓글이 비었을 때 호출되는 팝업  -->
-    <div id="alert_popup" class="border rounded-lg" style="width: 300px; height: 120px; display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; background-color: white">
-        <h3 id="alert_text" style="margin-top: 30px;">댓글을 입력하세요.</h3>
-        <button id="alert_btn" class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-                style="margin-top: 10px;">
-            확인
-        </button>
-    </div>
 </body>
 <script>
     let rowData = JSON.parse(document.getElementById("JSONData").value);
     let rowChatData = JSON.parse(document.getElementById("JSONChatData").value);
+    let post_user_id = document.getElementById("USER_ID").value;
+
+    console.log(rowData.user_id, post_user_id)
+    if(rowData.user_id !== post_user_id)
+        document.getElementById("post_owner").style.display = "none";
+
 
     // 저장된 내역 출력
     document.getElementById("title").innerText = rowData.title;
@@ -127,6 +127,7 @@
             "                                           <p class=\"leading-none\" style='margin-left: 50px; line-height: 23px;'>" + j.chat_contents + "</p>\n" +
             "                                        </div>\n"+
             "                                        <div class='w-[160px] flex' style='min-width: 130px;'>\n" +
+            "                                            <div style='margin-right: 10px;'><a href='#' id='delete_chat_btn' style='text-decoration-line: underline;' class='text-sm text-gray-800' onclick='fn_chatLikesDelClick("+j.chat_seq+")'>삭제</a></div>\n"+
             "                                            <button id='chat_likes_btn' onclick='fn_chatLikesClick("+j.chat_seq+")' class=\"inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-6 w-6\">\n" +
             "                                                <svg\n" +
             "                                                        xmlns=\"http://www.w3.org/2000/svg\"\n" +
@@ -157,6 +158,20 @@
         chat_body.appendChild(row);
     }
 
+    // 수정 버튼 클릭 이벤트
+    document.getElementById("fix_btn").addEventListener("click", function() {
+        location.href = "/fixPage/" + rowData.post_seq;
+    });
+
+    // 삭제 버튼 클릭 이벤트
+    document.getElementById("del_btn").addEventListener("click", function() {
+        if(confirm("삭제하시겠습니까?")) {
+            location.href = "/delete/" + rowData.post_seq;
+        } else {
+            event.preventDefault();
+        }
+    });
+
     // 이전화면 클릭 이벤트
     document.getElementById("back_btn").addEventListener("click", function () {
         event.preventDefault();
@@ -173,21 +188,23 @@
     document.getElementById("add_chat_btn").addEventListener("click", function () {
         if(document.getElementById("chat_contents").value.trim().length === 0) {
             event.preventDefault();
-            document.getElementById("alert_popup").style.display = "block";
+            alert("댓글을 입력해주세요");
         } else {
             location.href = "/add_chat/" + rowData.user_id + "/" + rowData.post_seq + "/" + document.getElementById("chat_contents").value;
         }
     })
 
-    document.getElementById("alert_btn").addEventListener("click", function() {
-        event.preventDefault();
-        document.getElementById("alert_popup").style.display = "none";
-    });
+    function fn_chatLikesDelClick(chat_seq) {
+        if(confirm("삭제하시겠습니까?")) {
+            location.href = "/delete/" + rowData.post_seq + "/" + chat_seq;
+        } else {
+            event.preventDefault();
+        }
+    }
 
     // 댓글 좋아요 클릭
     function fn_chatLikesClick(chat_seq) {
         location.href = "/likes/" + rowData.post_seq + "/" + chat_seq;
     }
-
 </script>
 </html>
